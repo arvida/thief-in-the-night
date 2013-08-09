@@ -14,7 +14,7 @@ Add the following add-ons to your new app:
 
 Add your [Heroku API key](https://devcenter.heroku.com/articles/platform-api-quickstart#authentication) as a config variable:
 
-  $ heroku config:add HEROKU_API_KEY=xxx
+	$ heroku config:add HEROKU_API_KEY=xxx
 	
 Add a e-mail to send error reports to if the scaling fails:
 
