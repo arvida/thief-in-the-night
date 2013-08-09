@@ -4,9 +4,17 @@ GEM
     excon (0.25.3)
     heroku-api (0.3.14)
       excon (~> 0.25.1)
+    httparty (0.11.0)
+      multi_json (~> 1.0)
+      multi_xml (>= 0.5.2)
+    mailchimp (0.0.9)
+      httparty
+    multi_json (1.7.8)
+    multi_xml (0.5.5)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   heroku-api
+  mailchimp

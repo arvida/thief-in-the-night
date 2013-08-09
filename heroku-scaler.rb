@@ -5,7 +5,9 @@ require "optparse"
 
 Bundler.require(:default)
 
-api_key = ENV["HEROKU_API_KEY"] || raise("No Heroku API key env variable set")
+heroku_api_key = ENV["HEROKU_API_KEY"] || raise("No Heroku API key env variable set")
+mandrill_api_key = ENV["MANDRILL_APIKEY"] || raise("No Mandrill API key env variable set")
+error_email = ENV["ERROR_REPORT_EMAIL"] || raise("No error report email env variable set")
 
 options = {}
 OptionParser.new do |opts|
@@ -19,5 +21,20 @@ raise OptionParser::MissingArgument, "--app" if options[:app].nil?
 raise OptionParser::MissingArgument, "--type" if options[:type].nil?
 raise OptionParser::MissingArgument, "--dynos" if options[:count].nil?
 
-heroku = Heroku::API.new(api_key: api_key)
-heroku.post_ps_scale options[:app], options[:type], options[:count]
+heroku = Heroku::API.new(api_key: heroku_api_key)
+
+begin
+  heroku.post_ps_scale options[:app], options[:type], options[:count]
+rescue Heroku::API::Errors::Error => error
+  mandrill = Mailchimp::Mandrill.new(mandrill_api_key)
+  mandrill.messages_send(
+    message: {
+      text: [error.message, error.response.body].join("\n\n"),
+      subject: "Error scaling #{options[:app]}:#{options[:type]} to #{options[:count]}",
+      from_email: mandrill.users_info["username"],
+      from_name: "Scaler",
+      to: [{email: error_email, name: ""}]
+    }
+  )
+  exit 1
+end
