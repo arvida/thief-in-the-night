@@ -4,3 +4,4 @@ ruby "2.0.0"
 
 gem "heroku-api"
 gem "mailchimp"
+gem "stathat"

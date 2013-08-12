@@ -11,6 +11,7 @@ GEM
       httparty
     multi_json (1.7.8)
     multi_xml (0.5.5)
+    stathat (0.1.7)
 
 PLATFORMS
   ruby
@@ -18,3 +19,4 @@ PLATFORMS
 DEPENDENCIES
   heroku-api
   mailchimp
+  stathat

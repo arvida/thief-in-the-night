@@ -8,6 +8,7 @@ Bundler.require(:default)
 heroku_api_key = ENV["HEROKU_API_KEY"] || raise("No Heroku API key env variable set")
 mandrill_api_key = ENV["MANDRILL_APIKEY"] || raise("No Mandrill API key env variable set")
 error_email = ENV["ERROR_REPORT_EMAIL"] || raise("No error report email env variable set")
+stathat_key = ENV["STATHAT_KEY"]
 
 options = {}
 OptionParser.new do |opts|
@@ -25,6 +26,10 @@ heroku = Heroku::API.new(api_key: heroku_api_key)
 
 begin
   heroku.post_ps_scale options[:app], options[:type], options[:count]
+  if stathat_key
+    StatHat::API.ez_post_count [options[:app], options[:type], options[:count]].join("-"), stathat_key, 1
+    sleep 1
+  end
 rescue Heroku::API::Errors::Error => error
   mandrill = Mailchimp::Mandrill.new(mandrill_api_key)
   mandrill.messages_send(
